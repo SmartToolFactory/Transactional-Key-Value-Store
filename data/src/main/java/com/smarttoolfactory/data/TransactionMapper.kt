@@ -27,13 +27,13 @@ interface Mapper<I, O> {
  */
 interface ListMapper<I, O> : Mapper<List<I>, List<O>>
 
-object TransactionMapper : Mapper<HashMap<String, String>, Transaction> {
+object TransactionMapper : Mapper<MutableMap<String, String>, Transaction> {
 
-    override fun mapToOutput(input: HashMap<String, String>): Transaction {
+    override fun mapToOutput(input: MutableMap<String, String>): Transaction {
         return Transaction(input)
     }
 
-    override fun mapToInput(output: Transaction): HashMap<String, String> {
+    override fun mapToInput(output: Transaction): MutableMap<String, String> {
         return output.map
     }
 }

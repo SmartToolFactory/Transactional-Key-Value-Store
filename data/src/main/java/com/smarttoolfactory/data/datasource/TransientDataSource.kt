@@ -36,9 +36,13 @@ class TransientDataSourceImpl @Inject constructor(
     override val transactionSize: Int
         get() = transactionStack.size
 
-    @Throws(ArrayIndexOutOfBoundsException::class)
+    @Throws(IndexOutOfBoundsException::class)
     override fun getTransactionAtIndex(index: Int): Transaction? {
-        return transactionStack[index]
+        return try {
+            transactionStack[index]
+        } catch (e: IndexOutOfBoundsException) {
+            null
+        }
     }
 
     override fun getTransactionStack(): List<Transaction> {
