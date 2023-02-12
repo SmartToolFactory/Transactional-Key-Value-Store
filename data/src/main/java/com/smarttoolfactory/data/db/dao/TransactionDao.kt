@@ -6,9 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.smarttoolfactory.data.model.TransactionEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao {
@@ -50,8 +48,8 @@ interface TransactionDao {
     suspend fun deleteTransaction(entity: TransactionEntity)
 
     /**
-     * Update an existing [TransactionEntity]
+     * Delete every transaction in [TransactionEntity] table
      */
-    @Update
-    suspend fun updateTransaction(entity: TransactionEntity): Int
+    @Query("DELETE FROM table_transaction")
+    suspend fun deleteAll()
 }
