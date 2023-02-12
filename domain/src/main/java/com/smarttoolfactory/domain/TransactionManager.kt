@@ -21,22 +21,33 @@ class TransactionManager @Inject constructor(
 
 
     fun doTransaction(input: String): Flow<Command> {
-        return decodeCommand(input)
-            .flatMapLatest { command: Command.Input ->
+        return splitInput(input)
+            .flatMapLatest {
+                decodeCommand(it)
+            }
+            .flatMapConcat { command: Command.Input ->
                 getTransaction(command)
             }
-            .catch {
-                emitAll(
-                    flowOf(
-                        Command.Error(TransactionError.WrongCommandError)
+            .onStart {
+                emit(
+                    Command.Input(
+                        transaction = input,
+                        key = null,
+                        value = null
                     )
                 )
             }
     }
 
-    private fun decodeCommand(input: String): Flow<Command.Input> {
+    private fun splitInput(input: String): Flow<List<String>> {
         return flow {
             val inputList = input.split(" ")
+            emit(inputList)
+        }
+    }
+
+    private fun decodeCommand(inputList: List<String>): Flow<Command.Input> {
+        return flow {
             inputList.firstOrNull()?.uppercase()?.let { transaction: String ->
                 emit(
                     Command.Input(
@@ -79,7 +90,7 @@ class TransactionManager @Inject constructor(
                 else -> {
                     emit(
                         Command.Error(
-                            error = TransactionError.WrongCommandError
+                            error = TransactionError.InvalidCommandError
                         )
                     )
                 }
@@ -89,7 +100,7 @@ class TransactionManager @Inject constructor(
                 if (cause.cause is NoSuchElementException) {
                     emit(
                         Command.Error(
-                            error = TransactionError.WrongCommandError
+                            error = TransactionError.EmptyCommandError
                         )
                     )
                 } else {

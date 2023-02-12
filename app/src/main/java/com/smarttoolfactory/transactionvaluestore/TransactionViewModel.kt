@@ -36,7 +36,6 @@ class TransactionViewModel @Inject constructor(
             .launchIn(viewModelScope)
 
         snapshotFlow { query }
-            .filter { it != null }
             .flatMapLatest { input: String? ->
                 input?.let {
                     transactionManager.doTransaction(input)
@@ -47,7 +46,9 @@ class TransactionViewModel @Inject constructor(
                 }
             }
             .onEach { command: Command ->
-                commandList.add(command)
+                if((command is Command.Complete).not()){
+                    commandList.add(command)
+                }
             }
             .launchIn(viewModelScope)
     }

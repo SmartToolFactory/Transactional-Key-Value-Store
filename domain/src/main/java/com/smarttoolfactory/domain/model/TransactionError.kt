@@ -1,10 +1,11 @@
 package com.smarttoolfactory.domain.model
 
 enum class TransactionError {
-    WrongCommandError,
+    EmptyCommandError,
     NoKeyCommandError,
     NoValueCommandError,
     NoTransactionError,
     KeyNotSetError,
+    InvalidCommandError,
     UnknownError
 }
