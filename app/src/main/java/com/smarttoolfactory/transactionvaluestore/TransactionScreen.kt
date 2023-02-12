@@ -2,6 +2,7 @@
 
 package com.smarttoolfactory.transactionvaluestore
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.smarttoolfactory.domain.model.Command
@@ -111,7 +113,8 @@ fun TransactionScreen(
     val enableUi = viewModel.enableUi
     val commandList = viewModel.commandList
 
-
+    val context = LocalContext.current
+    
     val sdf = remember { SimpleDateFormat("hh:mm", Locale.ROOT) }
 
     Column(
@@ -196,12 +199,14 @@ fun TransactionScreen(
         ChatInput(
             enabled = enableUi,
             modifier = Modifier.imePadding(),
+            onClick = {
+                Toast.makeText(context, "This feature is not available yet!", Toast.LENGTH_SHORT).show() 
+            },
             onMessageChange = { transaction ->
                 viewModel.submitTransaction(transaction)
                 coroutineScope.launch {
                     scrollState.animateScrollToItem(commandList.size - 1)
                 }
-
             }
         )
     }

@@ -27,6 +27,7 @@ import com.smarttoolfactory.transactionvaluestore.chat.widget.IndicatingIconButt
 internal fun ChatInput(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    onClick: () -> Unit,
     onMessageChange: (String) -> Unit
 ) {
 
@@ -47,6 +48,7 @@ internal fun ChatInput(
             enabled = enabled,
             input = input,
             empty = textEmpty,
+            onClick = onClick,
             onValueChange = {
                 input = it
             }
@@ -79,6 +81,7 @@ private fun ChatTextField(
     enabled: Boolean = true,
     input: TextFieldValue,
     empty: Boolean,
+    onClick: () -> Unit,
     onValueChange: (TextFieldValue) -> Unit
 ) {
 
@@ -96,7 +99,7 @@ private fun ChatTextField(
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
 
                 IndicatingIconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = onClick,
                     modifier = Modifier.then(Modifier.size(circleButtonSize)),
                     indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
                 ) {
@@ -131,7 +134,7 @@ private fun ChatTextField(
                 }
 
                 IndicatingIconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = onClick,
                     modifier = Modifier.then(Modifier.size(circleButtonSize)),
                     indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
                 ) {
@@ -143,7 +146,7 @@ private fun ChatTextField(
                 }
                 AnimatedVisibility(visible = empty) {
                     IndicatingIconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = onClick,
                         modifier = Modifier.then(Modifier.size(circleButtonSize)),
                         indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
                     ) {
@@ -178,5 +181,9 @@ private fun IndicatingIconButtonPreview() {
 @Preview(device = Devices.PIXEL_C)
 @Composable
 private fun ChatInputPreview() {
-    ChatInput() {}
+    ChatInput(
+        onClick = {}
+    ) {
+
+    }
 }
