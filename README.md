@@ -85,8 +85,9 @@ no transaction
 ### Nested transactions
 ```
 > SET foo 123
+> SET bar 456
 > BEGIN
-> SET bar 456 foo 456
+> SET foo 456
 > BEGIN
 > COUNT 456
 2
@@ -98,6 +99,9 @@ no transaction
 > ROLLBACK
 > GET foo
 456
+> DELETE foo
+> GET foo
+key not set
 > ROLLBACK
 > GET foo
 123
