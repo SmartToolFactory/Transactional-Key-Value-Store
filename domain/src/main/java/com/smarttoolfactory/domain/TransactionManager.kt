@@ -150,7 +150,7 @@ class TransactionManager @Inject constructor(
         if (input.key.isNullOrEmpty()) {
             emit(Command.Error(TransactionError.NoKeyCommandError))
         } else {
-            emit(Command.Success(countUseCase(input.key).toString()))
+            emit(Command.Success(countUseCase(input.key).data.toString()))
         }
     }
 
