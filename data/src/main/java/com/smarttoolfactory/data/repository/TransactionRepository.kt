@@ -3,6 +3,7 @@ package com.smarttoolfactory.data.repository
 import com.smarttoolfactory.data.datasource.LocalDataSource
 import com.smarttoolfactory.data.datasource.TransientDataSource
 import com.smarttoolfactory.data.model.Transaction
+import com.smarttoolfactory.data.model.TransactionEntity
 import javax.inject.Inject
 
 interface TransactionRepository {
@@ -18,8 +19,12 @@ interface TransactionRepository {
     fun begin()
     fun delete(key: String)
 
+    // Persistent Storage Functions
+    suspend fun clearLocalStore()
     suspend fun getLocalStoreTransactions(): Map<String, String>
     suspend fun commitToLocalStore(map: Map<String, String>)
+    suspend fun insertTransactionToToLocalStore(transactionEntity: TransactionEntity)
+    suspend fun insertAllToToLocalStore(map: Map<String, String>)
 }
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -66,11 +71,23 @@ class TransactionRepositoryImpl @Inject constructor(
         transientDataSource.delete(key)
     }
 
+    override suspend fun clearLocalStore() {
+        localDataSource.getTransactionMap()
+    }
+
     override suspend fun getLocalStoreTransactions(): Map<String, String> {
         return localDataSource.getTransactionMap()
     }
 
     override suspend fun commitToLocalStore(map: Map<String, String>) {
+        localDataSource.put(map)
+    }
+
+    override suspend fun insertTransactionToToLocalStore(transactionEntity: TransactionEntity) {
+        localDataSource.put(transactionEntity)
+    }
+
+    override suspend fun insertAllToToLocalStore(map: Map<String, String>) {
         localDataSource.put(map)
     }
 }
