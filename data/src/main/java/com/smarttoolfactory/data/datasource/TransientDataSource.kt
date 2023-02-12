@@ -18,12 +18,12 @@ interface TransientDataSource {
 
     fun getTransactionStack(): List<Transaction>
     fun getTransactionAtIndex(index: Int): Transaction?
-    suspend fun createTransaction(map: MutableMap<String, String>)
+     fun createTransaction(map: MutableMap<String, String>)
 
-    suspend fun getValue(key: String): String?
-    suspend fun setValue(key: String, value: String)
-    suspend fun removeCurrentTransaction()
-    suspend fun delete(key: String)
+     fun getValue(key: String): String?
+     fun setValue(key: String, value: String)
+     fun removeCurrentTransaction()
+     fun delete(key: String)
 }
 
 class TransientDataSourceImpl @Inject constructor(
@@ -48,23 +48,23 @@ class TransientDataSourceImpl @Inject constructor(
         return transactionStack
     }
 
-    override suspend fun createTransaction(map: MutableMap<String, String>) {
+    override  fun createTransaction(map: MutableMap<String, String>) {
         transactionStack.add(Transaction(map))
     }
 
-    override suspend fun getValue(key: String): String? {
+    override  fun getValue(key: String): String? {
         return currentTransaction.map[key]
     }
 
-    override suspend fun setValue(key: String, value: String) {
+    override  fun setValue(key: String, value: String) {
         currentTransaction.map[key] = value
     }
 
-    override suspend fun removeCurrentTransaction() {
+    override  fun removeCurrentTransaction() {
         transactionStack.removeLast()
     }
 
-    override suspend fun delete(key: String) {
+    override  fun delete(key: String) {
         currentTransaction.map.remove(key)
     }
 }

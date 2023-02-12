@@ -7,16 +7,18 @@ import javax.inject.Inject
 
 interface TransactionRepository {
 
-    suspend fun removeCurrentTransaction()
-    suspend fun getCurrentTransaction(): Transaction
-    suspend fun createTransaction(map: HashMap<String, String>)
+    fun getTransactionStack(): List<Transaction>
+    fun removeCurrentTransaction()
+    fun getCurrentTransaction(): Transaction
+    fun createTransaction(map: MutableMap<String, String>)
     fun getTransactionAtIndex(index: Int): Transaction?
 
-    suspend fun setValue(key: String, value: String)
-    suspend fun getValue(key: String): String?
-    suspend fun begin()
-    suspend fun delete(key: String)
+    fun setValue(key: String, value: String)
+    fun getValue(key: String): String?
+    fun begin()
+    fun delete(key: String)
 
+    suspend fun getLocalStoreTransactions(): Map<String, String>
     suspend fun commitToLocalStore(map: Map<String, String>)
 }
 
@@ -24,16 +26,19 @@ class TransactionRepositoryImpl @Inject constructor(
     private val transientDataSource: TransientDataSource,
     private val localDataSource: LocalDataSource
 ) : TransactionRepository {
+    override fun getTransactionStack(): List<Transaction> {
+        return transientDataSource.getTransactionStack()
+    }
 
-    override suspend fun removeCurrentTransaction() {
+    override fun removeCurrentTransaction() {
         transientDataSource.removeCurrentTransaction()
     }
 
-    override suspend fun getCurrentTransaction(): Transaction {
+    override fun getCurrentTransaction(): Transaction {
         return transientDataSource.currentTransaction
     }
 
-    override suspend fun createTransaction(map: HashMap<String, String>) {
+    override fun createTransaction(map: MutableMap<String, String>) {
         transientDataSource.createTransaction(map)
     }
 
@@ -41,24 +46,28 @@ class TransactionRepositoryImpl @Inject constructor(
         return transientDataSource.getTransactionAtIndex(index)
     }
 
-    override suspend fun setValue(key: String, value: String) {
+    override fun setValue(key: String, value: String) {
         transientDataSource.setValue(key, value)
     }
 
-    override suspend fun getValue(key: String): String? {
+    override fun getValue(key: String): String? {
         return transientDataSource.getValue(key)
     }
 
-    override suspend fun begin() {
+    override fun begin() {
         val currentStore = transientDataSource
             .currentTransaction
             .map
             .toMutableMap()
-        transientDataSource.createTransaction(currentStore)
+        createTransaction(currentStore)
     }
 
-    override suspend fun delete(key: String) {
+    override fun delete(key: String) {
         transientDataSource.delete(key)
+    }
+
+    override suspend fun getLocalStoreTransactions(): Map<String, String> {
+        return localDataSource.getTransactionMap()
     }
 
     override suspend fun commitToLocalStore(map: Map<String, String>) {
