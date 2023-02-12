@@ -3,6 +3,12 @@
 A transactional key-value store Sample written with Jetpack Compose with Room database 
 to store commits.
 
+
+
+https://user-images.githubusercontent.com/35650605/218341574-3b914472-a391-4194-a271-d0e54c1b9845.mp4
+
+
+
 ## Tech Stack
 * Jetpack Compose
 * Dagger Hilt
