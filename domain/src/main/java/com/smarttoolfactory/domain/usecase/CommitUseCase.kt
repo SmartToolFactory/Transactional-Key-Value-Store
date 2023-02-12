@@ -21,6 +21,7 @@ class CommitUseCase @Inject constructor(
 
             }
 
+            repository.clearLocalStore()
             repository.insertAllToToLocalStore(repository.getCurrentTransaction().map)
             repository.removeCurrentTransaction()
 
