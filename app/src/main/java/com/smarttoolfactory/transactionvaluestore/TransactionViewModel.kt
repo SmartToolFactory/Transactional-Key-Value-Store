@@ -49,6 +49,7 @@ class TransactionViewModel @Inject constructor(
                 if((command is Command.Complete).not()){
                     commandList.add(command)
                 }
+                query = null
             }
             .launchIn(viewModelScope)
     }

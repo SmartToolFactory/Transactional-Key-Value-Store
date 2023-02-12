@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package com.smarttoolfactory.transactionvaluestore
 
 import android.widget.Toast
@@ -8,8 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -17,7 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.smarttoolfactory.domain.model.Command
 import com.smarttoolfactory.domain.model.TransactionError
-import com.smarttoolfactory.transactionvaluestore.chat.*
+import com.smarttoolfactory.transactionvaluestore.chat.ChatInput
+import com.smarttoolfactory.transactionvaluestore.chat.MessageStatus
+import com.smarttoolfactory.transactionvaluestore.chat.ReceivedMessageRow
+import com.smarttoolfactory.transactionvaluestore.chat.SentMessageRow
 import com.smarttoolfactory.transactionvaluestore.chat.widget.ChatAppbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
