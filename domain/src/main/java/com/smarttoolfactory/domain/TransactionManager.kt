@@ -5,6 +5,7 @@ import com.smarttoolfactory.domain.model.TransactionError
 import com.smarttoolfactory.domain.model.TransactionResult
 import com.smarttoolfactory.domain.model.TransactionType
 import com.smarttoolfactory.domain.usecase.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -19,10 +20,9 @@ class TransactionManager @Inject constructor(
     private val setUseCase: SetUseCase
 ) {
 
-
     fun doTransaction(input: String): Flow<Command> {
         return splitInput(input)
-            .flatMapLatest {
+            .flatMapConcat {
                 decodeCommand(it)
             }
             .flatMapConcat { command: Command.Input ->
@@ -37,6 +37,16 @@ class TransactionManager @Inject constructor(
                     )
                 )
             }
+            .flowOn(Dispatchers.Default)
+            .catch { cause ->
+                val commandError = if (cause is NoSuchElementException) {
+                    Command.Error(TransactionError.EmptyCommandError)
+                } else {
+                    Command.Error(TransactionError.UnknownError)
+                }
+
+                emit(commandError)
+            }
     }
 
     private fun splitInput(input: String): Flow<List<String>> {
@@ -49,13 +59,18 @@ class TransactionManager @Inject constructor(
     private fun decodeCommand(inputList: List<String>): Flow<Command.Input> {
         return flow {
             inputList.firstOrNull()?.uppercase()?.let { transaction: String ->
-                emit(
-                    Command.Input(
-                        transaction = transaction,
-                        key = inputList.getOrNull(1),
-                        value = inputList.getOrNull(2)
+                if (transaction.isEmpty()) {
+                    throw NoSuchElementException()
+                } else {
+                    emit(
+                        Command.Input(
+                            transaction = transaction,
+                            key = inputList.getOrNull(1),
+                            value = inputList.getOrNull(2)
+                        )
                     )
-                )
+
+                }
             } ?: kotlin.run {
                 throw NoSuchElementException()
             }
@@ -96,21 +111,6 @@ class TransactionManager @Inject constructor(
                 }
             }
         }
-            .catch { cause ->
-                if (cause.cause is NoSuchElementException) {
-                    emit(
-                        Command.Error(
-                            error = TransactionError.EmptyCommandError
-                        )
-                    )
-                } else {
-                    emitAll(
-                        flowOf(
-                            Command.Error(TransactionError.UnknownError)
-                        )
-                    )
-                }
-            }
     }
 
     private suspend fun FlowCollector<Command>.getFlow(

@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.smarttoolfactory.domain.model.Command
@@ -30,8 +29,6 @@ fun TransactionScreen(
 ) {
     val enableUi = viewModel.enableUi
     val commandList = viewModel.commandList
-
-    val context = LocalContext.current
 
     val sdf = remember { SimpleDateFormat("hh:mm", Locale.ROOT) }
 
@@ -114,17 +111,21 @@ fun TransactionScreen(
             }
         }
 
-       Column(modifier = Modifier.padding(8.dp)) {
-           ChatInput(
-               enabled = enableUi,
-               modifier = Modifier.imePadding(),
-               onMessageChange = { transaction ->
-                   viewModel.submitTransaction(transaction)
-                   coroutineScope.launch {
-                       scrollState.animateScrollToItem(commandList.size - 1)
-                   }
-               }
-           )
-       }
+        Column(modifier = Modifier.padding(8.dp)) {
+            ChatInput(
+                enabled = enableUi,
+                modifier = Modifier.imePadding(),
+                onMessageChange = { transaction ->
+                    viewModel.submitTransaction(transaction)
+                    coroutineScope.launch {
+                        scrollState.animateScrollToItem(
+                            commandList
+                                .lastIndex
+                                .coerceAtLeast(0)
+                        )
+                    }
+                }
+            )
+        }
     }
 }
