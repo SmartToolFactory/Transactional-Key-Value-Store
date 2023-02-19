@@ -1,18 +1,16 @@
 package com.smarttoolfactory.transactionvaluestore.chat
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -27,7 +25,6 @@ import com.smarttoolfactory.transactionvaluestore.chat.widget.IndicatingIconButt
 internal fun ChatInput(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: () -> Unit,
     onMessageChange: (String) -> Unit
 ) {
 
@@ -48,7 +45,6 @@ internal fun ChatInput(
             enabled = enabled,
             input = input,
             empty = textEmpty,
-            onClick = onClick,
             onValueChange = {
                 input = it
             }
@@ -60,7 +56,7 @@ internal fun ChatInput(
             modifier = Modifier.size(48.dp),
             backgroundColor = Color(0xff00897B),
             onClick = {
-                if (enabled && !textEmpty) {
+                if (enabled) {
                     onMessageChange(input.text)
                     input = TextFieldValue("")
                 }
@@ -68,7 +64,7 @@ internal fun ChatInput(
         ) {
             Icon(
                 tint = Color.White,
-                imageVector = if (textEmpty) Icons.Filled.Mic else Icons.Filled.Send,
+                imageVector = Icons.Filled.Send,
                 contentDescription = null
             )
         }
@@ -81,7 +77,6 @@ private fun ChatTextField(
     enabled: Boolean = true,
     input: TextFieldValue,
     empty: Boolean,
-    onClick: () -> Unit,
     onValueChange: (TextFieldValue) -> Unit
 ) {
 
@@ -96,15 +91,10 @@ private fun ChatTextField(
                 .padding(2.dp),
             verticalAlignment = Alignment.Bottom
         ) {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-
-                IndicatingIconButton(
-                    onClick = onClick,
-                    modifier = Modifier.then(Modifier.size(circleButtonSize)),
-                    indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
-                ) {
-                    Icon(imageVector = Icons.Default.Mood, contentDescription = "emoji")
-                }
+            CompositionLocalProvider(
+                LocalContentAlpha provides
+                        if (empty) ContentAlpha.disabled else ContentAlpha.high
+            ) {
 
                 Box(
                     modifier = Modifier
@@ -116,7 +106,8 @@ private fun ChatTextField(
                     BasicTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 4.dp)
+                            .padding(start = 24.dp),
                         textStyle = TextStyle(
                             fontSize = 18.sp
                         ),
@@ -133,29 +124,6 @@ private fun ChatTextField(
                     )
                 }
 
-                IndicatingIconButton(
-                    onClick = onClick,
-                    modifier = Modifier.then(Modifier.size(circleButtonSize)),
-                    indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
-                ) {
-                    Icon(
-                        modifier = Modifier.rotate(-45f),
-                        imageVector = Icons.Default.AttachFile,
-                        contentDescription = "attach"
-                    )
-                }
-                AnimatedVisibility(visible = empty) {
-                    IndicatingIconButton(
-                        onClick = onClick,
-                        modifier = Modifier.then(Modifier.size(circleButtonSize)),
-                        indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.CameraAlt,
-                            contentDescription = "camera"
-                        )
-                    }
-                }
             }
         }
     }
@@ -181,9 +149,5 @@ private fun IndicatingIconButtonPreview() {
 @Preview(device = Devices.PIXEL_C)
 @Composable
 private fun ChatInputPreview() {
-    ChatInput(
-        onClick = {}
-    ) {
-
-    }
+    ChatInput {}
 }
